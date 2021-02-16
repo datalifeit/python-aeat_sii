@@ -335,25 +335,23 @@ class RecievedInvoiceMapper(BaseInvoiceMapper):
             'ImporteTotal': self.total_amount(invoice),
             # TODO: BaseImponibleACoste
             'DescripcionOperacion': self._description(invoice),
-            'DesgloseFactura': {
-                # 'InversionSujetoPasivo': {
-                #     'DetalleIVA':
-                #         map(self.build_taxes, self.taxes(invoice)),
-                # },
-                'DesgloseIVA': {
-                    'DetalleIVA': []
-                }
-            },
+            'DesgloseFactura': {},
             'Contraparte': self._build_counterpart(invoice),
             'FechaRegContable': self._move_date(invoice).strftime(_DATE_FMT),
             'CuotaDeducible': self._deductible_amount(invoice),
         }
+        tax_section = 'DesgloseIVA'
+        if (self.not_exempt_kind(invoice) and
+                self.not_exempt_kind(invoice) == 'S2'):
+            tax_section = 'InversionSujetoPasivo'
+        ret['DesgloseFactura'][tax_section] = {'DetalleIVA': []}
+
         _taxes = self.taxes(invoice)
         if _taxes:
-            ret['DesgloseFactura']['DesgloseIVA']['DetalleIVA'].extend(
+            ret['DesgloseFactura'][tax_section]['DetalleIVA'].extend(
                 self.build_taxes(invoice, tax) for tax in _taxes)
         else:
-            ret['DesgloseFactura']['DesgloseIVA']['DetalleIVA'].append({
+            ret['DesgloseFactura'][tax_section]['DetalleIVA'].append({
                 'BaseImponible': self.untaxed_amount(invoice)})
 
         self._update_rectified_invoice(ret, invoice)
