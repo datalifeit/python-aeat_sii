@@ -298,7 +298,7 @@ class RecievedInvoiceMapper(BaseInvoiceMapper):
     def build_delete_request(self, invoice):
         return {
             'PeriodoLiquidacion': self._build_period(invoice),
-            'IDFactura': self.build_named_invoice_id(invoice),
+            'IDFactura': self._build_invoice_id(invoice),
         }
 
     def build_submit_request(self, invoice):
