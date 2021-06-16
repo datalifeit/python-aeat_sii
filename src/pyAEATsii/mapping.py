@@ -166,6 +166,10 @@ class IssuedInvoiceMapper(BaseInvoiceMapper):
                 must_detail_op
                 and self.not_exempt_kind(invoice) == 'S2'
             )
+            or (
+                self.not_exempt_kind(invoice) is None
+                and self.exempt_kind(invoice) is None
+            )
         )
         detail = {
             'Sujeta': {},
